@@ -115,7 +115,13 @@ class Chatbot:
                 Focus on giving a clear, concise explanation with examples if appropriate.
 
                 At the end of your explanation, include 2-3 relevant research papers that someone could read to learn more.
-                Format each paper as: Title | Authors | Year | arXiv ID (if applicable)
+                Format each paper reference on a new line exactly like this:
+                Paper Title | Author1, Author2 | Year | arXiv:XXXX.XXXXX
+
+                For papers without an arXiv ID, just omit that part:
+                Paper Title | Author1, Author2 | Year
+
+                Make sure to separate each field with the | character.
                 """
                 response = self.llm.invoke(prompt)
 
@@ -135,11 +141,15 @@ class Chatbot:
 
                     # Create a source for the summarized paper
                     paper_info = self.arxiv_client.analyze_paper(content)
+
+                    # Clean up the arXiv ID to ensure it's in the correct format
+                    clean_arxiv_id = content.lower().replace("arxiv:", "").split("v")[0].strip()
+
                     sources = [{
                         "id": content,
                         "title": paper_info.get("title", f"Paper {content}"),
                         "authors": paper_info.get("authors", ["Unknown"]),
-                        "url": f"https://arxiv.org/abs/{content}",
+                        "url": f"https://arxiv.org/abs/{clean_arxiv_id}",
                         "year": paper_info.get("year", "")
                     }]
 
@@ -156,7 +166,13 @@ class Chatbot:
                     Focus on key concepts, major developments, and current state of research.
 
                     At the end of your summary, include 2-3 relevant research papers that someone could read to learn more.
-                    Format each paper as: Title | Authors | Year | arXiv ID (if applicable)
+                    Format each paper reference on a new line exactly like this:
+                    Paper Title | Author1, Author2 | Year | arXiv:XXXX.XXXXX
+
+                    For papers without an arXiv ID, just omit that part:
+                    Paper Title | Author1, Author2 | Year
+
+                    Make sure to separate each field with the | character.
                     """
                     response = self.llm.invoke(prompt)
 
@@ -177,7 +193,13 @@ class Chatbot:
                 Be clear, concise, and accurate. Include examples if helpful.
 
                 At the end of your answer, include 1-2 relevant research papers that someone could read to learn more.
-                Format each paper as: Title | Authors | Year | arXiv ID (if applicable)
+                Format each paper reference on a new line exactly like this:
+                Paper Title | Author1, Author2 | Year | arXiv:XXXX.XXXXX
+
+                For papers without an arXiv ID, just omit that part:
+                Paper Title | Author1, Author2 | Year
+
+                Make sure to separate each field with the | character.
                 """
                 response = self.llm.invoke(prompt)
 
@@ -210,7 +232,8 @@ class Chatbot:
 
         # Define a pattern to match paper references
         # Looking for patterns like: Title | Authors | Year | arXiv ID
-        pattern = r"([^|]+)\s*\|\s*([^|]+)\s*\|\s*([^|]+)(?:\s*\|\s*([^|]+))?"
+        # The pattern is designed to match lines that have the specific format with | separators
+        pattern = r"([^|\n]+)\s*\|\s*([^|\n]+)\s*\|\s*([^|\n]+)(?:\s*\|\s*([^|\n]+))?"
 
         # Find all matches
         matches = re.findall(pattern, text)
@@ -220,10 +243,45 @@ class Chatbot:
             title = match[0].strip()
             authors = [author.strip() for author in match[1].split(',')]
             year = match[2].strip()
-            arxiv_id = match[3].strip() if len(match) > 3 and match[3].strip() else None
+            # Extract and clean arXiv ID if present
+            arxiv_id = None
+            if len(match) > 3 and match[3].strip():
+                # Look for patterns like arXiv:XXXX.XXXXX or just XXXX.XXXXX
+                arxiv_text = match[3].strip()
+                if "arxiv" in arxiv_text.lower():
+                    # Extract the ID part after "arXiv:"
+                    import re
+                    arxiv_match = re.search(r'arxiv:?(\d+\.\d+)', arxiv_text.lower())
+                    if arxiv_match:
+                        arxiv_id = arxiv_match.group(1)
+                    else:
+                        arxiv_id = arxiv_text
+                else:
+                    # Check if it looks like an arXiv ID (XXXX.XXXXX)
+                    import re
+                    arxiv_match = re.search(r'(\d+\.\d+)', arxiv_text)
+                    if arxiv_match:
+                        arxiv_id = arxiv_match.group(1)
+                    else:
+                        arxiv_id = arxiv_text
 
             # Create a URL based on arXiv ID if available
-            url = f"https://arxiv.org/abs/{arxiv_id}" if arxiv_id else f"https://scholar.google.com/scholar?q={title.replace(' ', '+')}"
+            if arxiv_id:
+                # Clean up the arXiv ID to ensure it's in the correct format
+                # Remove any "arXiv:" prefix and any version suffix like "v1"
+                clean_arxiv_id = arxiv_id.lower().replace("arxiv:", "").split("v")[0].strip()
+
+                # Check if it looks like a valid arXiv ID (typically has a dot or slash)
+                if "." in clean_arxiv_id or "/" in clean_arxiv_id:
+                    url = f"https://arxiv.org/abs/{clean_arxiv_id}"
+                else:
+                    # If it doesn't look like a valid arXiv ID, use a search URL
+                    url = f"https://arxiv.org/search/?query={clean_arxiv_id}&searchtype=all"
+            else:
+                # For non-arXiv papers, create a more specific search URL
+                # Include title and authors for better results
+                search_query = f"{title} {' '.join(authors[:2])} {year}".replace(' ', '+')
+                url = f"https://scholar.google.com/scholar?q={search_query}"
 
             sources.append({
                 "id": str(uuid.uuid4()),

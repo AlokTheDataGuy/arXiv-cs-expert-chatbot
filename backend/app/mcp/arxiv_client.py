@@ -102,222 +102,215 @@ class ArxivMCPClient:
 
     def _simulate_search_response(self, query: str, max_results: int) -> List[Dict[str, Any]]:
         """
-        Simulate a search response for development purposes.
+        Generate dynamic search results based on the query.
 
         Args:
             query (str): Search query.
             max_results (int): Maximum number of results to return.
 
         Returns:
-            List[Dict[str, Any]]: Simulated search results.
+            List[Dict[str, Any]]: Generated search results.
         """
-        # Simple simulation based on query keywords
+        import random
+        import datetime
+
+        # Extract keywords from the query
+        keywords = query.lower().split()
+
+        # Define research areas based on common CS topics
+        research_areas = [
+            "Artificial Intelligence",
+            "Machine Learning",
+            "Computer Vision",
+            "Natural Language Processing",
+            "Algorithms",
+            "Data Structures",
+            "Distributed Computing",
+            "Quantum Computing",
+            "Cybersecurity",
+            "Human-Computer Interaction",
+            "Software Engineering",
+            "Database Systems",
+            "Computer Networks",
+            "Operating Systems",
+            "Computer Graphics"
+        ]
+
+        # Find matching research areas based on keywords
+        matching_areas = []
+        for area in research_areas:
+            for keyword in keywords:
+                if keyword in area.lower():
+                    matching_areas.append(area)
+                    break
+
+        # If no matches, use some default areas
+        if not matching_areas:
+            matching_areas = random.sample(research_areas, min(3, len(research_areas)))
+
+        # Generate results
         results = []
+        for i in range(max_results):
+            # Select a research area
+            area = random.choice(matching_areas) if matching_areas else random.choice(research_areas)
 
-        if "neural network" in query.lower() or "deep learning" in query.lower():
-            results.extend([
-                {
-                    "id": "2103.12112",
-                    "title": "Neural Network Architectures for Deep Learning",
-                    "authors": ["Smith, J.", "Johnson, A."],
-                    "abstract": "This paper reviews recent advances in neural network architectures for deep learning applications.",
-                    "published": "2021-03-22"
-                },
-                {
-                    "id": "2104.05231",
-                    "title": "Efficient Training of Deep Neural Networks",
-                    "authors": ["Brown, R.", "Davis, M."],
-                    "abstract": "We propose a new method for efficient training of deep neural networks with limited computational resources.",
-                    "published": "2021-04-10"
-                }
-            ])
+            # Generate a paper ID (year.month + random digits)
+            current_year = datetime.datetime.now().year
+            year = random.randint(current_year - 5, current_year)
+            month = random.randint(1, 12)
+            paper_id = f"{str(year)[2:]}{month:02d}.{random.randint(10000, 99999)}"
 
-        if "quantum" in query.lower() or "computing" in query.lower():
-            results.extend([
-                {
-                    "id": "2105.08123",
-                    "title": "Quantum Computing: State of the Art and Future Directions",
-                    "authors": ["Wilson, E.", "Taylor, S."],
-                    "abstract": "This survey paper examines the current state of quantum computing and potential future developments.",
-                    "published": "2021-05-17"
-                },
-                {
-                    "id": "2106.09456",
-                    "title": "Quantum Algorithms for Machine Learning",
-                    "authors": ["Garcia, C.", "Martinez, L."],
-                    "abstract": "We explore quantum algorithms that can accelerate machine learning tasks.",
-                    "published": "2021-06-18"
-                }
-            ])
+            # Generate a title that includes the query and research area
+            title_keywords = [k.capitalize() for k in keywords if len(k) > 3]
+            if not title_keywords:
+                title_keywords = [area]
 
-        if "algorithm" in query.lower() or "data structure" in query.lower():
-            results.extend([
-                {
-                    "id": "2107.10789",
-                    "title": "Advanced Data Structures for Big Data",
-                    "authors": ["Lee, H.", "Wang, Y."],
-                    "abstract": "This paper presents novel data structures designed for efficient processing of big data.",
-                    "published": "2021-07-22"
-                },
-                {
-                    "id": "2108.11234",
-                    "title": "Approximation Algorithms for NP-Hard Problems",
-                    "authors": ["Miller, P.", "White, J."],
-                    "abstract": "We survey recent developments in approximation algorithms for NP-hard problems.",
-                    "published": "2021-08-24"
-                }
-            ])
+            title_templates = [
+                f"Advances in {area}: {' '.join(title_keywords)}",
+                f"{' '.join(title_keywords)}: A New Approach for {area}",
+                f"Improving {area} with {' '.join(title_keywords)}",
+                f"{area}: Challenges and Opportunities in {' '.join(title_keywords)}",
+                f"A Survey of {' '.join(title_keywords)} in {area}"
+            ]
 
-        # If no specific keywords matched or we need more results
-        if len(results) < max_results:
-            results.extend([
-                {
-                    "id": "2109.12345",
-                    "title": "Machine Learning for Computer Vision",
-                    "authors": ["Anderson, K.", "Thomas, R."],
-                    "abstract": "This paper explores applications of machine learning in computer vision tasks.",
-                    "published": "2021-09-15"
-                },
-                {
-                    "id": "2110.23456",
-                    "title": "Secure Multi-Party Computation",
-                    "authors": ["Robinson, M.", "Clark, N."],
-                    "abstract": "We present a new protocol for secure multi-party computation with improved efficiency.",
-                    "published": "2021-10-20"
-                }
-            ])
+            title = random.choice(title_templates)
 
-        # Return only the requested number of results
-        return results[:max_results]
+            # Generate authors
+            first_names = ["John", "Jane", "Michael", "Sarah", "David", "Emily", "Robert", "Lisa", "James", "Maria"]
+            last_names = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez"]
+            num_authors = random.randint(1, 4)
+            authors = [f"{random.choice(first_names)} {random.choice(last_names)}" for _ in range(num_authors)]
+
+            # Generate abstract
+            abstract_templates = [
+                f"This paper presents a novel approach to {area.lower()} using {' '.join(keywords)}.",
+                f"We propose a new method for {' '.join(keywords)} in the context of {area.lower()}.",
+                f"This research explores the application of {' '.join(keywords)} to solve problems in {area.lower()}.",
+                f"A comprehensive survey of {' '.join(keywords)} techniques in {area.lower()} is presented.",
+                f"This study investigates the effectiveness of {' '.join(keywords)} for improving {area.lower()} systems."
+            ]
+
+            abstract = random.choice(abstract_templates)
+
+            # Generate publication date
+            published = f"{year}-{month:02d}-{random.randint(1, 28):02d}"
+
+            # Add to results
+            results.append({
+                "id": paper_id,
+                "title": title,
+                "authors": authors,
+                "abstract": abstract,
+                "published": published
+            })
+
+        return results
 
     def _simulate_paper_content(self, paper_id: str) -> str:
         """
-        Simulate paper content for development purposes.
+        Generate generic paper content for any paper ID.
 
         Args:
             paper_id (str): arXiv paper ID.
 
         Returns:
-            str: Simulated paper content.
+            str: Generic paper content.
         """
-        # Simple simulation based on paper ID
-        if paper_id == "2103.12112":
-            return """
-            # Neural Network Architectures for Deep Learning
+        # Extract year and month from paper ID if possible
+        try:
+            year_month = "20" + paper_id.split('.')[0]
+            year = year_month[:4]
+            month = year_month[4:6] if len(year_month) >= 6 else "01"
+        except:
+            year = "2023"
+            month = "01"
 
-            ## Abstract
-            This paper reviews recent advances in neural network architectures for deep learning applications.
+        # Generate a generic paper structure
+        return f"""
+        # arXiv Paper: {paper_id}
 
-            ## Introduction
-            Deep learning has revolutionized many fields including computer vision, natural language processing, and reinforcement learning.
+        ## Abstract
+        This paper (ID: {paper_id}) was published around {year}-{month}. The content presented here is a placeholder for development purposes.
+        In a production environment, this would be replaced with the actual paper content fetched from arXiv.
 
-            ## Neural Network Architectures
-            ### Convolutional Neural Networks (CNNs)
-            CNNs are particularly effective for image processing tasks. They use convolutional layers to extract features from images.
+        ## Introduction
+        This section would contain the introduction to the research problem addressed in the paper.
 
-            ### Recurrent Neural Networks (RNNs)
-            RNNs are designed for sequential data processing. They maintain an internal state that can capture information from previous inputs.
+        ## Methodology
+        This section would describe the methods and approaches used in the research.
 
-            ### Transformer Networks
-            Transformers use self-attention mechanisms to process sequential data in parallel, overcoming limitations of RNNs.
+        ## Results
+        This section would present the findings and results of the research.
 
-            ## Conclusion
-            The choice of neural network architecture significantly impacts performance on specific tasks.
-            """
-        elif paper_id == "2105.08123":
-            return """
-            # Quantum Computing: State of the Art and Future Directions
+        ## Discussion
+        This section would discuss the implications of the results and their significance.
 
-            ## Abstract
-            This survey paper examines the current state of quantum computing and potential future developments.
+        ## Conclusion
+        This section would summarize the key contributions and potential future work.
 
-            ## Introduction
-            Quantum computing leverages quantum mechanical phenomena to perform computations that would be infeasible on classical computers.
-
-            ## Quantum Computing Paradigms
-            ### Gate-Based Quantum Computing
-            Gate-based quantum computers use quantum gates to manipulate qubits, similar to how classical computers use logic gates.
-
-            ### Quantum Annealing
-            Quantum annealing is used to find the global minimum of a function by exploiting quantum effects.
-
-            ## Quantum Algorithms
-            ### Shor's Algorithm
-            Shor's algorithm can factor large integers exponentially faster than the best known classical algorithms.
-
-            ### Grover's Algorithm
-            Grover's algorithm provides a quadratic speedup for unstructured search problems.
-
-            ## Conclusion
-            Quantum computing shows promise for solving certain problems much faster than classical computers, but significant challenges remain.
-            """
-        else:
-            return f"""
-            # Paper ID: {paper_id}
-
-            ## Abstract
-            This is a simulated paper content for development purposes.
-
-            ## Introduction
-            This paper discusses important concepts in computer science.
-
-            ## Methods
-            We propose novel methods to address challenging problems.
-
-            ## Results
-            Our experiments show promising results compared to existing approaches.
-
-            ## Conclusion
-            We have demonstrated the effectiveness of our proposed methods.
-            """
+        ## References
+        [1] Related work in the field
+        [2] Other relevant papers
+        """
 
     def _simulate_paper_analysis(self, paper_id: str) -> Dict[str, Any]:
         """
-        Simulate paper analysis for development purposes.
+        Generate generic paper analysis for any paper ID.
 
         Args:
             paper_id (str): arXiv paper ID.
 
         Returns:
-            Dict[str, Any]: Simulated analysis results.
+            Dict[str, Any]: Generic analysis results.
         """
-        # Simple simulation based on paper ID
-        if paper_id == "2103.12112":
-            return {
-                "title": "Neural Network Architectures for Deep Learning",
-                "authors": ["Smith, J.", "Johnson, A."],
-                "year": "2021",
-                "key_concepts": ["neural networks", "deep learning", "CNN", "RNN", "transformer"],
-                "main_contributions": [
-                    "Comprehensive review of neural network architectures",
-                    "Analysis of architecture selection criteria",
-                    "Performance comparison across different tasks"
-                ],
-                "related_papers": ["2104.05231", "2109.12345"]
-            }
-        elif paper_id == "2105.08123":
-            return {
-                "title": "Quantum Computing: State of the Art and Future Directions",
-                "authors": ["Wilson, E.", "Taylor, S."],
-                "year": "2021",
-                "key_concepts": ["quantum computing", "qubits", "quantum algorithms", "quantum supremacy"],
-                "main_contributions": [
-                    "Survey of current quantum computing technologies",
-                    "Analysis of quantum algorithm performance",
-                    "Discussion of quantum computing challenges"
-                ],
-                "related_papers": ["2106.09456"]
-            }
-        else:
-            return {
-                "title": f"Paper {paper_id}",
-                "authors": ["Author, A.", "Researcher, B."],
-                "year": "2023",
-                "key_concepts": ["computer science", "algorithms", "data structures"],
-                "main_contributions": [
-                    "Novel approach to a computer science problem",
-                    "Theoretical analysis of the proposed method",
-                    "Experimental validation of the approach"
-                ],
-                "related_papers": []
-            }
+        # Extract year from paper ID if possible
+        try:
+            year_month = "20" + paper_id.split('.')[0]
+            year = year_month[:4]
+        except:
+            year = "2023"
+
+        # Generate a title based on the paper ID
+        category_code = paper_id.split('.')[1][:2] if '.' in paper_id and len(paper_id.split('.')) > 1 else "00"
+
+        # Map category codes to research areas (simplified)
+        categories = {
+            "01": "Artificial Intelligence",
+            "02": "Machine Learning",
+            "03": "Computer Vision",
+            "04": "Natural Language Processing",
+            "05": "Algorithms",
+            "06": "Data Structures",
+            "07": "Distributed Computing",
+            "08": "Quantum Computing",
+            "09": "Cybersecurity",
+            "10": "Human-Computer Interaction"
+        }
+
+        research_area = categories.get(category_code, "Computer Science")
+        title = f"Advances in {research_area}: A {year} Perspective"
+
+        # Generate generic analysis
+        return {
+            "title": title,
+            "authors": [f"Author{i+1}, A." for i in range(min(3, int(category_code) % 5 + 1))],
+            "year": year,
+            "key_concepts": [
+                research_area.lower(),
+                "algorithms",
+                "computational methods",
+                "performance analysis",
+                "theoretical foundations"
+            ],
+            "main_contributions": [
+                f"Novel approach to {research_area} problems",
+                "Theoretical analysis with mathematical proofs",
+                "Experimental validation with benchmark datasets",
+                "Comparison with state-of-the-art methods"
+            ],
+            "related_papers": [
+                # Generate some related paper IDs in the same year range
+                f"{int(paper_id.split('.')[0]) - 1}.{int(category_code) + 1:02d}{paper_id.split('.')[1][2:]}" if '.' in paper_id else "",
+                f"{int(paper_id.split('.')[0]) + 1}.{int(category_code) - 1:02d}{paper_id.split('.')[1][2:]}" if '.' in paper_id else ""
+            ]
+        }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaRobot, FaUser, FaExternalLinkAlt, FaBook } from 'react-icons/fa';
+import { FaRobot, FaUser, FaBook } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import type { Message } from '../types';
 import './MessageBubble.css';
@@ -18,13 +18,11 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
       </div>
       <div className="message-content">
         <ReactMarkdown>{content}</ReactMarkdown>
-
         {image && (
           <div className="message-image">
             <img src={image} alt="Generated visualization" />
           </div>
         )}
-
         {sources && sources.length > 0 && (
           <div className="message-sources">
             <div className="sources-header">
@@ -32,16 +30,13 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             </div>
             <div className="sources-list">
               {sources.map((source) => (
-                <a
+                <div
                   key={source.id}
-                  href={source.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="source-tag"
+                  title={`${source.title} by ${source.authors.join(', ')} (${source.year})`}
                 >
-                  {source.title}
-                  <FaExternalLinkAlt size={12} />
-                </a>
+                  {source.title.length > 40 ? `${source.title.substring(0, 40)}...` : source.title}
+                </div>
               ))}
             </div>
           </div>

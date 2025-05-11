@@ -5,6 +5,11 @@
   align-items: flex-start; /* Align items at the top */
 }
 
+/* Reverse the order for user messages to put avatar on the right */
+.message.user {
+  flex-direction: row-reverse;
+}
+
 .message-avatar {
   width: 40px;
   height: 40px;
@@ -17,7 +22,10 @@
   font-size: 1.2rem; /* Increase icon size */
 }
 
+/* Adjust margin for user avatar */
 .message.user .message-avatar {
+  margin-right: 0;
+  margin-left: 0.75rem;
   background-color: var(--secondary-color);
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
@@ -42,7 +50,6 @@
 .message.user .message-content {
   background-color: var(--secondary-color);
   color: white;
-  margin-left: auto;
   border-top-right-radius: 0; /* Create speech bubble effect */
 }
 
@@ -129,23 +136,20 @@
 .source-tag {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
   padding: 0.4rem 0.75rem;
-  background-color: var(--secondary-color);
-  color: white;
+  background-color: rgba(52, 152, 219, 0.1);
+  color: var(--dark-gray);
+  border: 1px solid rgba(52, 152, 219, 0.3);
   border-radius: 20px;
   font-size: 0.85rem;
-  text-decoration: none;
-  transition: var(--transition);
+  font-weight: 500;
+  margin: 0.25rem;
   max-width: 250px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.source-tag:hover {
-  background-color: #2980b9;
-  transform: translateY(-2px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  cursor: default;
 }
 
 @keyframes fadeIn {
