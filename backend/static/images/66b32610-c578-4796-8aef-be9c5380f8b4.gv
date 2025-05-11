@@ -1,0 +1,10 @@
+// Visualization of: description="neural networks
+digraph {
+	input [label="Input Layer"]
+	hidden1 [label="Hidden Layer 1"]
+	hidden2 [label="Hidden Layer 2"]
+	output [label="Output Layer"]
+	input -> hidden1
+	hidden1 -> hidden2
+	hidden2 -> output
+}
