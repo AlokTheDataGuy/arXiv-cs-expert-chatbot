@@ -1,34 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { FaPaperPlane, FaRobot } from 'react-icons/fa';
-import './ChatInterface.css';
+import { FaPaperPlane, FaRobot, FaLightbulb } from 'react-icons/fa';
 import MessageBubble from './MessageBubble';
 import type { Message } from '../types/types';
 
 const API_URL = 'http://localhost:8000';
 
+// Example queries that users can click on
+const EXAMPLE_QUERIES = [
+  "Explain neural networks and their applications",
+  "What is the difference between TCP and UDP protocols?",
+  "How does blockchain technology work?",
+  "Explain Big O notation with examples",
+];
+
 const ChatInterface: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '0',
-      role: 'bot',
-      content: `Hello! I'm your Computer Science Expert Chatbot. I can help you with:
-
-- Answering complex CS questions
-- Explaining CS concepts in detail
-- Summarizing research papers
-- Maintaining conversation context
-
-Try commands like:
-- "explain neural networks"
-- "summarize 2105.08123" (using a paper ID)
-- "What is the difference between TCP and UDP?"
-- "How does blockchain technology work?"
-
-Or just ask me any CS-related question!`,
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -89,9 +76,33 @@ Or just ask me any CS-related question!`,
     }
   };
 
+  // Function to handle example query click
+  const handleExampleClick = (query: string) => {
+    setInput(query);
+  };
+
   return (
     <div className="chat-interface">
       <div className="chat-container">
+        {messages.length === 0 && (
+          <div className="chat-welcome-header">
+            <h2>Welcome to arXiv CS Expert Chatbot</h2>
+            <p>
+             Your AI research assistant for computer science—explaining concepts, answering complex questions, and summarizing arXiv papers in context-aware conversations.
+            </p>
+            <div className="chat-welcome-examples">
+              {EXAMPLE_QUERIES.map((query, index) => (
+                <div
+                  key={index}
+                  className="example-tag"
+                  onClick={() => handleExampleClick(query)}
+                >
+                  <FaLightbulb style={{ marginRight: '6px', fontSize: '0.8rem' }} /> {query}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="messages-container">
           {messages.map((message) => (
             <MessageBubble key={message.id} message={message} />

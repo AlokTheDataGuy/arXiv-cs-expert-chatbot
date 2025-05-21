@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { FaImage, FaSpinner } from 'react-icons/fa';
-import './Visualization.css';
+import { FaImage, FaSpinner, FaProjectDiagram, FaLightbulb, FaCode, FaNetworkWired, FaDatabase, FaLink } from 'react-icons/fa';
 
 const Visualization: React.FC = () => {
   const [concept, setConcept] = useState('');
@@ -12,22 +11,22 @@ const Visualization: React.FC = () => {
 
   const handleVisualize = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!concept.trim()) {
       setError('Please enter a concept to visualize');
       return;
     }
-    
+
     setIsLoading(true);
     setError(null);
     setImage(null);
     setMessage(null);
-    
+
     try {
       const response = await axios.post('http://localhost:8000/visualize', {
         concept: concept.trim()
       });
-      
+
       setImage(`http://localhost:8000/images/${response.data.image}`);
       setMessage(response.data.message);
     } catch (err) {
@@ -43,7 +42,7 @@ const Visualization: React.FC = () => {
       <div className="visualization-container">
         <h2>Visualize Computer Science Concepts</h2>
         <p>Generate diagrams to visualize computer science concepts</p>
-        
+
         <form className="visualization-form" onSubmit={handleVisualize}>
           <div className="visualization-input-container">
             <input
@@ -59,9 +58,9 @@ const Visualization: React.FC = () => {
             </button>
           </div>
         </form>
-        
+
         {error && <div className="error-message">{error}</div>}
-        
+
         {image && (
           <div className="visualization-result">
             <h3>Visualization Result</h3>
@@ -71,16 +70,16 @@ const Visualization: React.FC = () => {
             </div>
           </div>
         )}
-        
+
         <div className="visualization-examples">
-          <h3>Example Concepts to Visualize</h3>
+          <h3><FaLightbulb className="example-icon" /> Example Concepts to Visualize</h3>
           <ul>
-            <li>Binary Tree</li>
-            <li>Neural Network</li>
-            <li>Sorting Algorithm</li>
-            <li>Hash Table</li>
-            <li>TCP/IP Protocol</li>
-            <li>Blockchain</li>
+            <li onClick={() => setConcept('Binary Tree')}><FaProjectDiagram className="example-icon" /> Binary Tree</li>
+            <li onClick={() => setConcept('Neural Network')}><FaNetworkWired className="example-icon" /> Neural Network</li>
+            <li onClick={() => setConcept('Sorting Algorithm')}><FaCode className="example-icon" /> Sorting Algorithm</li>
+            <li onClick={() => setConcept('Hash Table')}><FaDatabase className="example-icon" /> Hash Table</li>
+            <li onClick={() => setConcept('TCP/IP Protocol')}><FaLink className="example-icon" /> TCP/IP Protocol</li>
+            <li onClick={() => setConcept('Blockchain')}><FaProjectDiagram className="example-icon" /> Blockchain</li>
           </ul>
         </div>
       </div>

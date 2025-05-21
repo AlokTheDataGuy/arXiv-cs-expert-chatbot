@@ -2,7 +2,6 @@ import React from 'react';
 import { FaRobot, FaUser, FaBook } from 'react-icons/fa';
 import ReactMarkdown from 'react-markdown';
 import type { Message } from '../types';
-import './MessageBubble.css';
 
 interface MessageBubbleProps {
   message: Message;

@@ -1,18 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import './App.css';
 import ChatInterface from './components/ChatInterface';
 import PaperSearch from './components/PaperSearch';
 import Visualization from './components/Visualization';
 import Header from './components/Header';
-import Footer from './components/Footer';
-import Navigation from './components/Navigation';
+// import Footer from './components/Footer';
 
 function App() {
   return (
     <Router>
       <div className="app-container">
         <Header />
-        <Navigation />
         <main className="main-content">
           <Routes>
             <Route path="/" element={<ChatInterface />} />
@@ -22,7 +19,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </Router>
   );

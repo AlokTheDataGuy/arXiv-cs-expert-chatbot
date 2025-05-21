@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { FaSearch, FaSpinner } from 'react-icons/fa';
-import './PaperSearch.css';
+import { FaSearch, FaSpinner, FaBook, FaCalendarAlt, FaUsers, FaFileAlt, FaExternalLinkAlt } from 'react-icons/fa';
 
 interface Paper {
   id: string;
@@ -20,23 +19,23 @@ const PaperSearch: React.FC = () => {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!query.trim()) {
       setError('Please enter a search query');
       return;
     }
-    
+
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await axios.post('http://localhost:8000/search', {
         query,
         max_results: maxResults
       });
-      
+
       setPapers(response.data);
-      
+
       if (response.data.length === 0) {
         setError('No papers found matching your query');
       }
@@ -53,7 +52,7 @@ const PaperSearch: React.FC = () => {
       <div className="search-container">
         <h2>Search arXiv Papers</h2>
         <p>Search for computer science papers on arXiv</p>
-        
+
         <form className="search-form" onSubmit={handleSearch}>
           <div className="search-input-container">
             <input
@@ -79,9 +78,9 @@ const PaperSearch: React.FC = () => {
             </button>
           </div>
         </form>
-        
+
         {error && <div className="error-message">{error}</div>}
-        
+
         <div className="results-container">
           {papers.length > 0 && (
             <>
@@ -89,13 +88,17 @@ const PaperSearch: React.FC = () => {
               <div className="papers-list">
                 {papers.map((paper) => (
                   <div key={paper.id} className="paper-card">
-                    <h4 className="paper-title">{paper.title}</h4>
+                    <a href={`https://arxiv.org/abs/${paper.id}`} target="_blank" rel="noopener noreferrer" className="paper-title-link">
+                      <h4 className="paper-title">
+                        <FaBook className="paper-icon" /> {paper.title} <FaExternalLinkAlt className="external-link-icon" />
+                      </h4>
+                    </a>
                     <div className="paper-meta">
-                      <span className="paper-id">ID: {paper.id}</span>
-                      <span className="paper-date">Published: {paper.published}</span>
+                      <span className="paper-id"><FaFileAlt className="paper-icon" /> {paper.id}</span>
+                      <span className="paper-date"><FaCalendarAlt className="paper-icon" /> {paper.published}</span>
                     </div>
                     <div className="paper-authors">
-                      Authors: {paper.authors.join(', ')}
+                      <FaUsers className="paper-icon" /> {paper.authors.join(', ')}
                     </div>
                     <p className="paper-abstract">{paper.abstract}</p>
                   </div>
